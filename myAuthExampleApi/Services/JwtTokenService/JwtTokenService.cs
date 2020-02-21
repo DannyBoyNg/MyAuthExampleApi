@@ -117,5 +117,14 @@ namespace Services.JwtTokenService
             DateTime when = GetCreationTimeFromRefreshToken(refreshToken);
             return when < DateTime.UtcNow.AddHours(Settings.RefreshTokenExpirationInHours * -1);
         }
+
+        public bool IsRefreshTokenValid(int userId, string refreshToken)
+        {
+            var token = RefreshTokenRepo.Get(userId, refreshToken);
+            if (token != null) RefreshTokenRepo.Delete(token);
+            if (token == null || IsRefreshTokenExpired(refreshToken)) return false;
+            RefreshTokenRepo.Save();
+            return true;
+        }
     }
 }

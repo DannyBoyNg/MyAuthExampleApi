@@ -15,6 +15,7 @@ using Services.PasswordHashingService;
 using Services.EmailService;
 using Services.UserService;
 using myAuthExampleApi.Repositories;
+using System;
 
 namespace myAuthExampleApi
 {
@@ -64,6 +65,7 @@ namespace myAuthExampleApi
                 .AddJwtBearer(options => {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
+                        ClockSkew = new TimeSpan(0, 0, 60), //Default is 300. After the token is expired, you have 60 seconds extra time to allow for some clock skew.
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,

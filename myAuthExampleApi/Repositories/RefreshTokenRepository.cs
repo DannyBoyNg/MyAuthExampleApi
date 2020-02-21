@@ -28,10 +28,9 @@ namespace myAuthExampleApi.Repositories
             db.RefreshTokens.Add(new RefreshTokens { UserId = userId, Token = refreshToken });
         }
 
-        public void Delete(int userId, string refreshToken)
+        public void Delete(IRefreshTokens token)
         {
-            var token = Get(userId, refreshToken);
-            if (token != null) db.RefreshTokens.Remove(token);
+            if (token != null) db.RefreshTokens.Remove(token as RefreshTokens);
         }
 
         public void DeleteAll(int userId) //only deleteAll refreshTokens if you want to log user off from all devices. mostly just for admins
@@ -45,7 +44,7 @@ namespace myAuthExampleApi.Repositories
             var token = Get(userId, refreshToken);
             if (token != null)
             {
-                Delete(userId, refreshToken);
+                Delete(token);
                 return true;
             }
             return false;

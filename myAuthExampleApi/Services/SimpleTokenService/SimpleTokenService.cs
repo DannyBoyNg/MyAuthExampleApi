@@ -45,10 +45,13 @@ namespace Services.SimpleTokenService
             return when < DateTime.UtcNow.AddMinutes(Settings.TokenExpirationInMinutes * -1);
         }
 
-        public bool ValidateToken(int userId, string simpleToken)
+        public bool IsValid(int userId, string simpleToken)
         {
-            if (IsExpired(simpleToken)) return false;
-            return SimpleTokenRepo.IsValid(userId, simpleToken);
+            var token = SimpleTokenRepo.Get(userId, simpleToken);
+            if (token != null) SimpleTokenRepo.Delete(token);
+            if (token == null || IsExpired(simpleToken)) return false;
+            SimpleTokenRepo.Save();
+            return true;
         }
 
         public void StoreToken(int userId, string simpleToken)
@@ -75,9 +78,13 @@ namespace Services.SimpleTokenService
         {
             DateTime? timestamp = null;
             ISimpleTokens mostRecent = null;
-            var tokens = SimpleTokenRepo.GetAll(userId).ToList();
+            var tokens = SimpleTokenRepo.GetByUserId(userId).ToList();
             foreach (var token in tokens)
             {
+                if (IsExpired(token.Token))
+                {
+                    SimpleTokenRepo.Delete(token);
+                }
                 var creation = GetCreationTime(token.Token);
                 if (timestamp == null || creation > timestamp)
                 {

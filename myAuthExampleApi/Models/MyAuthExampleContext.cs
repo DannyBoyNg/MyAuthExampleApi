@@ -35,9 +35,11 @@ namespace myAuthExampleApi.Models
 
             modelBuilder.Entity<Users>(entity =>
             {
+                entity.HasIndex(e => e.UserName).IsUnique();
+
                 entity.Property(e => e.PasswordHash).IsRequired();
 
-                entity.Property(e => e.UserName).IsRequired();
+                entity.Property(e => e.UserName).HasMaxLength(128).IsRequired();
             });
 
             OnModelCreatingPartial(modelBuilder);

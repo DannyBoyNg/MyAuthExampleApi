@@ -84,12 +84,15 @@ namespace myAuthExampleApi.Controllers
             var claimsPrincipal = jwtTokenService.GetPrincipalFromExpiredAccessToken(accessToken);
             var uid = jwtTokenService.GetClaim(claimsPrincipal, "uid");
             if (!int.TryParse(uid, out int userId)) return Unauthorized("Invalid access token");
+
+            if (jwtTokenService.IsRefreshTokenExpired(refreshToken)) return Unauthorized("Refresh token expired");
             //validate refresh token (Optionally delete refreshToken after validation)
             if(!refreshTokenRepo.IsValid(userId, refreshToken)) return Unauthorized("Invalid refresh token");
             //get user from data store
             var user = userService.GetById(userId);
             //create new tokens
-            var newAccessToken = jwtTokenService.GenerateAccessToken(user.UserName);
+            var claims = new List<Claim> { new Claim("uid", uid) };
+            var newAccessToken = jwtTokenService.GenerateAccessToken(user.UserName, claims);
             var newRefreshToken = jwtTokenService.GenerateRefreshToken();
             //store refresh token in data store
             jwtTokenService.StoreRefreshToken(userId, newRefreshToken);
@@ -135,7 +138,7 @@ Your account has been created. Click on this link to confirm your email: http://
             var user = userService.GetById(userId);
             if (user == null) return BadRequest();
             if (user.Active == false) return BadRequest("Account is not active.");
-            if (!simpleTokenService.ValidateToken(userId, simpleToken)) return BadRequest("Invalid token");
+            if (!simpleTokenService.IsValid(userId, simpleToken)) return BadRequest("Invalid token");
             if (password.Length < 8) return BadRequest("Password is not at least 8 characters long.");
             if (password != confirmPassword) return BadRequest("Password is not equal to confirm password.");
             userService.UpdatePassword(userId, hashingService.HashPassword(password));
@@ -180,7 +183,7 @@ Your account has been created. Click on this link to confirm your email: http://
         {
             if (userService.IsEmailConfirmed(userId)) return BadRequest("Your email has already been confirmed");
             if (simpleTokenService.IsExpired(token)) return BadRequest("Expired token");
-            if (!simpleTokenService.ValidateToken(userId, token)) return BadRequest("Invalid token");
+            if (!simpleTokenService.IsValid(userId, token)) return BadRequest("Invalid token");
             userService.SetEmailConfirmed(userId);
             return NoContent();
         }

@@ -5,12 +5,12 @@ namespace myAuthExampleApi.Repositories
 {
     public interface ISimpleTokenRepository
     {
-        void Delete(int userId, string simpleToken);
-        void DeleteAll(int userId);
+        void Delete(ISimpleTokens simpleToken);
+        void DeleteAll(IEnumerable<ISimpleTokens> simpleToken);
         SimpleTokens Get(int userId, string simpleToken);
-        IEnumerable<ISimpleTokens> GetAll(int userId);
+        IEnumerable<ISimpleTokens> GetByUserId(int userId);
         void Insert(int userId, string simpleToken);
-        bool IsValid(int userId, string refreshToken);
+        //bool IsValid(int userId, string refreshToken);
         int Save();
     }
 }

@@ -18,7 +18,7 @@ namespace myAuthExampleApi.Repositories
             return db.SimpleTokens.Where(x => x.UserId == userId && x.Token == simpleToken).SingleOrDefault();
         }
 
-        public IEnumerable<ISimpleTokens> GetAll(int userId)
+        public IEnumerable<ISimpleTokens> GetByUserId(int userId)
         {
             return db.SimpleTokens.Where(x => x.UserId == userId).Cast<ISimpleTokens>().ToList();
         }
@@ -28,28 +28,26 @@ namespace myAuthExampleApi.Repositories
             db.SimpleTokens.Add(new SimpleTokens { UserId = userId, Token = simpleToken });
         }
 
-        public void Delete(int userId, string simpleToken)
+        public void Delete(ISimpleTokens simpleToken)
         {
-            var token = Get(userId, simpleToken);
-            if (token != null) db.SimpleTokens.Remove(token);
+            if (simpleToken != null) db.SimpleTokens.Remove(simpleToken as SimpleTokens);
         }
 
-        public void DeleteAll(int userId)
+        public void DeleteAll(IEnumerable<ISimpleTokens> tokens)
         {
-            var tokens = GetAll(userId).Cast<SimpleTokens>().ToList();
-            if (tokens.Any()) db.SimpleTokens.RemoveRange(tokens);
+            db.SimpleTokens.RemoveRange(tokens.Cast<SimpleTokens>());
         }
 
-        public bool IsValid(int userId, string refreshToken)
-        {
-            var token = Get(userId, refreshToken);
-            if (token != null)
-            {
-                Delete(userId, refreshToken);
-                return true;
-            }
-            return false;
-        }
+        //public bool IsValid(int userId, string refreshToken)
+        //{
+        //    var token = Get(userId, refreshToken);
+        //    if (token != null)
+        //    {
+        //        Delete(token);
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
         public int Save()
         {

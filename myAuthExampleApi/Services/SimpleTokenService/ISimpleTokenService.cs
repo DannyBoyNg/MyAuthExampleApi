@@ -12,6 +12,6 @@ namespace Services.SimpleTokenService
         ISimpleTokens GetMostRecent(int userId);
         void StoreToken(int userId, string simpleToken);
         bool IsExpired(string simpleToken);
-        bool ValidateToken(int userId, string simpleToken);
+        bool IsValid(int userId, string simpleToken);
     }
 }
