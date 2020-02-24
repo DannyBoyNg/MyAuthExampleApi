@@ -1,6 +1,6 @@
-﻿namespace myAuthExampleApi.Models
+﻿namespace Services.SimpleTokenService
 {
-    public interface ISimpleTokens
+    public interface ISimpleToken
     {
         string Token { get; set; }
         int UserId { get; set; }

@@ -1,4 +1,5 @@
 ﻿using myAuthExampleApi.Models;
+using Services.SimpleTokenService;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,29 +14,29 @@ namespace myAuthExampleApi.Repositories
             this.db = db;
         }
 
-        public SimpleTokens Get(int userId, string simpleToken)
+        public ISimpleToken Get(int userId, string simpleToken)
         {
             return db.SimpleTokens.Where(x => x.UserId == userId && x.Token == simpleToken).SingleOrDefault();
         }
 
-        public IEnumerable<ISimpleTokens> GetByUserId(int userId)
+        public IEnumerable<ISimpleToken> GetByUserId(int userId)
         {
-            return db.SimpleTokens.Where(x => x.UserId == userId).Cast<ISimpleTokens>().ToList();
+            return db.SimpleTokens.Where(x => x.UserId == userId).Cast<ISimpleToken>().ToList();
         }
 
         public void Insert(int userId, string simpleToken)
         {
-            db.SimpleTokens.Add(new SimpleTokens { UserId = userId, Token = simpleToken });
+            db.SimpleTokens.Add(new SimpleToken { UserId = userId, Token = simpleToken });
         }
 
-        public void Delete(ISimpleTokens simpleToken)
+        public void Delete(ISimpleToken simpleToken)
         {
-            if (simpleToken != null) db.SimpleTokens.Remove(simpleToken as SimpleTokens);
+            if (simpleToken != null) db.SimpleTokens.Remove(simpleToken as SimpleToken);
         }
 
-        public void DeleteAll(IEnumerable<ISimpleTokens> tokens)
+        public void DeleteAll(IEnumerable<ISimpleToken> tokens)
         {
-            db.SimpleTokens.RemoveRange(tokens.Cast<SimpleTokens>());
+            db.SimpleTokens.RemoveRange(tokens.Cast<SimpleToken>());
         }
 
         //public bool IsValid(int userId, string refreshToken)

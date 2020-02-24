@@ -1,5 +1,4 @@
-﻿using myAuthExampleApi.Models;
-using System;
+﻿using System;
 
 namespace Services.SimpleTokenService
 {
@@ -9,9 +8,7 @@ namespace Services.SimpleTokenService
 
         string Generate();
         DateTime GetCreationTime(string simpleToken);
-        ISimpleTokens GetMostRecent(int userId);
         void StoreToken(int userId, string simpleToken);
-        bool IsExpired(string simpleToken);
-        bool IsValid(int userId, string simpleToken);
+        void Validate(int userId, string simpleToken);
     }
 }

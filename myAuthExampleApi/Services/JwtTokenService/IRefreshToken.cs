@@ -1,6 +1,6 @@
-﻿namespace myAuthExampleApi.Models
+﻿namespace Services.JwtTokenService
 {
-    public interface IRefreshTokens
+    public interface IRefreshToken
     {
         string Token { get; set; }
         int UserId { get; set; }

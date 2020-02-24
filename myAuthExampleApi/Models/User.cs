@@ -1,6 +1,8 @@
-﻿namespace myAuthExampleApi.Models
+﻿using Services.UserService;
+
+namespace myAuthExampleApi.Models
 {
-    public partial class Users : IUsers
+    public partial class User : IUser
     {
         public int Id { get; set; }
         public string UserName { get; set; }

@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using myAuthExampleApi.Models;
-using myAuthExampleApi.Repositories;
 using System;
 using System.Linq;
 
@@ -26,6 +24,34 @@ namespace Services.SimpleTokenService
             return Convert.ToBase64String(time.Concat(key).ToArray()).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         }
 
+        public void Validate(int userId, string simpleToken)
+        {
+            var tokenExpired = false;
+            var tokens = SimpleTokenRepo.GetByUserId(userId);
+            //Remove expired simple tokens from db
+            foreach (var token in tokens)
+            {
+                if (IsExpired(token.Token))
+                {
+                    if (token.Token == simpleToken) tokenExpired = true;
+                    SimpleTokenRepo.Delete(token);
+                }
+            }
+            //Validate user provided simple token
+            var dbToken = tokens.Where(x => x.Token == simpleToken).SingleOrDefault();
+            if (dbToken != null) SimpleTokenRepo.Delete(dbToken);
+            SimpleTokenRepo.Save();
+            if (tokenExpired) throw new Exception("Token expired");
+            if (dbToken == null) throw new Exception("Invalid token");
+        }
+
+        public void StoreToken(int userId, string simpleToken)
+        {
+            if (InCooldownPeriod(userId, out _)) throw new Exception($"You must wait at least {Settings.CooldownPeriodInMinutes} minutes to perform this action again");
+            SimpleTokenRepo.Insert(userId, simpleToken);
+            SimpleTokenRepo.Save();
+        }
+
         public DateTime GetCreationTime(string simpleToken)
         {
             if (simpleToken == null) throw new ArgumentNullException(nameof(simpleToken));
@@ -37,28 +63,6 @@ namespace Services.SimpleTokenService
             }
             byte[] data = Convert.FromBase64String(simpleToken);
             return DateTime.FromBinary(BitConverter.ToInt64(data, 0));
-        }
-
-        public bool IsExpired(string simpleToken)
-        {
-            DateTime when = GetCreationTime(simpleToken);
-            return when < DateTime.UtcNow.AddMinutes(Settings.TokenExpirationInMinutes * -1);
-        }
-
-        public bool IsValid(int userId, string simpleToken)
-        {
-            var token = SimpleTokenRepo.Get(userId, simpleToken);
-            if (token != null) SimpleTokenRepo.Delete(token);
-            if (token == null || IsExpired(simpleToken)) return false;
-            SimpleTokenRepo.Save();
-            return true;
-        }
-
-        public void StoreToken(int userId, string simpleToken)
-        {
-            if (InCooldownPeriod(userId, out _)) throw new Exception($"You must wait at least {Settings.CooldownPeriodInMinutes} minutes to perform this action again");
-            SimpleTokenRepo.Insert(userId, simpleToken);
-            SimpleTokenRepo.Save();
         }
 
         private bool InCooldownPeriod(int userId, out TimeSpan? cooldownLeft)
@@ -74,10 +78,10 @@ namespace Services.SimpleTokenService
             return tokenCreationTime > DateTime.UtcNow.AddMinutes(-1 * Settings.CooldownPeriodInMinutes);
         }
 
-        public ISimpleTokens GetMostRecent(int userId)
+        private ISimpleToken GetMostRecent(int userId)
         {
             DateTime? timestamp = null;
-            ISimpleTokens mostRecent = null;
+            ISimpleToken mostRecent = null;
             var tokens = SimpleTokenRepo.GetByUserId(userId).ToList();
             foreach (var token in tokens)
             {
@@ -93,6 +97,13 @@ namespace Services.SimpleTokenService
                 }
             }
             return mostRecent;
+        }
+
+        private bool IsExpired(string simpleToken)
+        {
+            if (Settings.TokenExpirationInMinutes == 0) return false; //When set to 0, simple token never expires
+            DateTime when = GetCreationTime(simpleToken);
+            return when < DateTime.UtcNow.AddMinutes(Settings.TokenExpirationInMinutes * -1);
         }
     }
 }

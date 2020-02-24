@@ -12,7 +12,6 @@ using System.Net.Mail;
 using System.Security.Claims;
 using Services.PasswordHashingService;
 using Services.UserService;
-using myAuthExampleApi.Repositories;
 using System.Threading;
 
 namespace myAuthExampleApi.Controllers
@@ -27,7 +26,6 @@ namespace myAuthExampleApi.Controllers
         private readonly ISimpleTokenService simpleTokenService;
         private readonly IPasswordHashingService hashingService;
         private readonly IEmailService emailService;
-        private readonly IRefreshTokenRepository refreshTokenRepo;
 
         public AuthController(
             IConfiguration configuration,
@@ -35,8 +33,7 @@ namespace myAuthExampleApi.Controllers
             IJwtTokenService jwtTokenService,
             ISimpleTokenService simpleTokenService,
             IPasswordHashingService hashingService,
-            IEmailService emailService,
-            IRefreshTokenRepository refreshTokenRepo)
+            IEmailService emailService)
         {
             this.configuration = configuration;
             this.userService = userService;
@@ -44,7 +41,6 @@ namespace myAuthExampleApi.Controllers
             this.simpleTokenService = simpleTokenService;
             this.hashingService = hashingService;
             this.emailService = emailService;
-            this.refreshTokenRepo = refreshTokenRepo;
         }
 
         [Route("/Startup")]
@@ -59,7 +55,7 @@ namespace myAuthExampleApi.Controllers
         public ActionResult Token(string username, string password)
         {
             //sleep timer to demonstrate the loading bar
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             //get user from data store
             var user = userService.GetByName(username);
             //validate password
@@ -84,10 +80,8 @@ namespace myAuthExampleApi.Controllers
             var claimsPrincipal = jwtTokenService.GetPrincipalFromExpiredAccessToken(accessToken);
             var uid = jwtTokenService.GetClaim(claimsPrincipal, "uid");
             if (!int.TryParse(uid, out int userId)) return Unauthorized("Invalid access token");
-
-            if (jwtTokenService.IsRefreshTokenExpired(refreshToken)) return Unauthorized("Refresh token expired");
             //validate refresh token (Optionally delete refreshToken after validation)
-            if(!refreshTokenRepo.IsValid(userId, refreshToken)) return Unauthorized("Invalid refresh token");
+            jwtTokenService.ValidateRefreshToken(userId, refreshToken);
             //get user from data store
             var user = userService.GetById(userId);
             //create new tokens
@@ -110,16 +104,18 @@ namespace myAuthExampleApi.Controllers
             if (errors.Any()) return BadRequest(errors);
 
             var passwordHash = hashingService.HashPassword(password);
-            var user = new Users
+            var user = new User
             {
                 UserName = username,
                 Email = email,
                 PasswordHash = passwordHash,
                 Active = true,
             };
-            userService.Create(user as IUsers);
+            userService.Create(user as IUser);
             var simpleToken = simpleTokenService.Generate();
             simpleTokenService.StoreToken(user.Id, simpleToken);
+            //Don't send email if no email host settings are defined
+            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return NoContent();
             var domain = emailService.Settings.Domain;
             var body = $@"Welcome,
 
@@ -138,7 +134,7 @@ Your account has been created. Click on this link to confirm your email: http://
             var user = userService.GetById(userId);
             if (user == null) return BadRequest();
             if (user.Active == false) return BadRequest("Account is not active.");
-            if (!simpleTokenService.IsValid(userId, simpleToken)) return BadRequest("Invalid token");
+            simpleTokenService.Validate(userId, simpleToken);
             if (password.Length < 8) return BadRequest("Password is not at least 8 characters long.");
             if (password != confirmPassword) return BadRequest("Password is not equal to confirm password.");
             userService.UpdatePassword(userId, hashingService.HashPassword(password));
@@ -149,6 +145,9 @@ Your account has been created. Click on this link to confirm your email: http://
         [AllowAnonymous]
         public ActionResult ForgotUsername(string email)
         {
+            //Don't send email if no email host settings are defined
+            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email settings are not set.");
+            //Logic
             var domain = configuration["EmailSettings:Domain"];
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
@@ -165,6 +164,9 @@ Your account has been created. Click on this link to confirm your email: http://
         [AllowAnonymous]
         public ActionResult ForgotPassword(string email)
         {
+            //Don't send email if no email host settings are defined
+            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email settings are not set.");
+            //Logic
             var domain = configuration["Domain"];
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
@@ -182,8 +184,7 @@ Your account has been created. Click on this link to confirm your email: http://
         public ActionResult ConfirmEmail(int userId, string token)
         {
             if (userService.IsEmailConfirmed(userId)) return BadRequest("Your email has already been confirmed");
-            if (simpleTokenService.IsExpired(token)) return BadRequest("Expired token");
-            if (!simpleTokenService.IsValid(userId, token)) return BadRequest("Invalid token");
+            simpleTokenService.Validate(userId, token);
             userService.SetEmailConfirmed(userId);
             return NoContent();
         }

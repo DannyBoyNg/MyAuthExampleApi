@@ -1,6 +1,6 @@
-﻿namespace myAuthExampleApi.Models
+﻿namespace Services.UserService
 {
-    public interface IUsers
+    public interface IUser
     {
         bool Active { get; set; }
         string Email { get; set; }

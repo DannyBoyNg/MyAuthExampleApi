@@ -13,27 +13,27 @@ namespace myAuthExampleApi.Models
         {
         }
 
-        public virtual DbSet<RefreshTokens> RefreshTokens { get; set; }
-        public virtual DbSet<SimpleTokens> SimpleTokens { get; set; }
-        public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+        public virtual DbSet<SimpleToken> SimpleTokens { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<RefreshTokens>(entity =>
+            modelBuilder.Entity<RefreshToken>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.Token });
 
                 entity.Property(e => e.Token).HasMaxLength(40);
             });
 
-            modelBuilder.Entity<SimpleTokens>(entity =>
+            modelBuilder.Entity<SimpleToken>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.Token });
 
                 entity.Property(e => e.Token).HasMaxLength(40);
             });
 
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(e => e.UserName).IsUnique();
 

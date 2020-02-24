@@ -1,7 +1,4 @@
-﻿using myAuthExampleApi.Models;
-using myAuthExampleApi.Repositories;
-
-namespace Services.UserService
+﻿namespace Services.UserService
 {
     public class UserService : IUserService
     {
@@ -12,22 +9,22 @@ namespace Services.UserService
             UserRepo = userRepo;
         }
 
-        public void Create(IUsers user)
+        public void Create(IUser user)
         {
-            UserRepo.Insert(user as Users);
+            UserRepo.Insert(user as IUser);
         }
 
-        public IUsers GetByEmail(string email)
+        public IUser GetByEmail(string email)
         {
             return UserRepo.GetByEmail(email);
         }
 
-        public IUsers GetById(int userId)
+        public IUser GetById(int userId)
         {
             return UserRepo.Get(userId);
         }
 
-        public IUsers GetByName(string username)
+        public IUser GetByName(string username)
         {
             return UserRepo.GetByName(username);
         }

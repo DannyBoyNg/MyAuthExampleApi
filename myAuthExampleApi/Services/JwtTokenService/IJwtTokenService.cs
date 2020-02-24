@@ -10,6 +10,6 @@ namespace Services.JwtTokenService
         string GenerateRefreshToken();
         void StoreRefreshToken(int userId, string refreshToken);
         ClaimsPrincipal GetPrincipalFromExpiredAccessToken(string token);
-        bool IsRefreshTokenExpired(string refreshToken);
+        void ValidateRefreshToken(int userId, string refreshToken);
     }
 }

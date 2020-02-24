@@ -1,4 +1,5 @@
 ﻿using myAuthExampleApi.Models;
+using Services.UserService;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,27 +17,27 @@ namespace myAuthExampleApi.Repositories
         public void Delete(int userId)
         {
             var user = Get(userId);
-            db.Users.Remove(user as Users);
+            db.Users.Remove(user as User);
         }
 
-        public IUsers Get(int userId)
+        public IUser Get(int userId)
         {
             return db.Users.Where(x => x.Id == userId).SingleOrDefault();
         }
 
-        public IUsers GetByEmail(string email)
+        public IUser GetByEmail(string email)
         {
             return db.Users.Where(x => x.Email == email).SingleOrDefault();
         }
 
-        public IUsers GetByName(string username)
+        public IUser GetByName(string username)
         {
             return db.Users.Where(x => x.UserName == username).SingleOrDefault();
         }
 
-        public void Insert(IUsers user)
+        public void Insert(IUser user)
         {
-            db.Users.Add(user as Users);
+            db.Users.Add(user as User);
             db.SaveChanges();
         }
 

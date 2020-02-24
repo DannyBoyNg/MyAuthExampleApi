@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using myAuthExampleApi.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -112,19 +111,32 @@ namespace Services.JwtTokenService
             return DateTime.FromBinary(BitConverter.ToInt64(data, 0));
         }
 
-        public bool IsRefreshTokenExpired(string refreshToken)
+        public void ValidateRefreshToken(int userId, string refreshToken)
         {
-            DateTime when = GetCreationTimeFromRefreshToken(refreshToken);
-            return when < DateTime.UtcNow.AddHours(Settings.RefreshTokenExpirationInHours * -1);
+            var tokenExpired = false;
+            var tokens = RefreshTokenRepo.GetByUserId(userId).ToList();
+            //Remove expired refresh tokens from db
+            foreach (var token in tokens)
+            {
+                if (IsRefreshTokenExpired(token.Token))
+                {
+                    if (token.Token == refreshToken) tokenExpired = true;
+                    RefreshTokenRepo.Delete(token);
+                }
+            }
+            //Validate user provided refresh token
+            var dbToken = tokens.Where(x => x.Token == refreshToken).SingleOrDefault();
+            if (dbToken != null) RefreshTokenRepo.Delete(dbToken);
+            RefreshTokenRepo.Save();
+            if (tokenExpired) throw new Exception("Session expired");
+            if (dbToken == null) throw new Exception("Invalid token");
         }
 
-        public bool IsRefreshTokenValid(int userId, string refreshToken)
+        private bool IsRefreshTokenExpired(string refreshToken)
         {
-            var token = RefreshTokenRepo.Get(userId, refreshToken);
-            if (token != null) RefreshTokenRepo.Delete(token);
-            if (token == null || IsRefreshTokenExpired(refreshToken)) return false;
-            RefreshTokenRepo.Save();
-            return true;
+            if (Settings.RefreshTokenExpirationInHours == 0) return false; //When set to 0, refresh token never expires
+            DateTime when = GetCreationTimeFromRefreshToken(refreshToken);
+            return when < DateTime.UtcNow.AddHours(Settings.RefreshTokenExpirationInHours * -1);
         }
     }
 }

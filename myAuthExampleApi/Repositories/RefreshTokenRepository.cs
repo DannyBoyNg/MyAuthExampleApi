@@ -1,4 +1,5 @@
 ﻿using myAuthExampleApi.Models;
+using Services.JwtTokenService;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,41 +14,30 @@ namespace myAuthExampleApi.Repositories
             this.db = db;
         }
 
-        public RefreshTokens Get(int userId, string refreshToken)
+        public IRefreshToken Get(int userId, string refreshToken)
         {
             return db.RefreshTokens.Where(x => x.UserId == userId && x.Token == refreshToken).SingleOrDefault();
         }
 
-        public IEnumerable<IRefreshTokens> GetAll(int userId)
+        public IEnumerable<IRefreshToken> GetByUserId(int userId)
         {
-            return db.RefreshTokens.Where(x => x.UserId == userId).Cast<IRefreshTokens>().ToList();
+            return db.RefreshTokens.Where(x => x.UserId == userId).Cast<IRefreshToken>().ToList();
         }
 
         public void Insert(int userId, string refreshToken)
         {
-            db.RefreshTokens.Add(new RefreshTokens { UserId = userId, Token = refreshToken });
+            db.RefreshTokens.Add(new RefreshToken { UserId = userId, Token = refreshToken });
         }
 
-        public void Delete(IRefreshTokens token)
+        public void Delete(IRefreshToken token)
         {
-            if (token != null) db.RefreshTokens.Remove(token as RefreshTokens);
+            if (token != null) db.RefreshTokens.Remove(token as RefreshToken);
         }
 
         public void DeleteAll(int userId) //only deleteAll refreshTokens if you want to log user off from all devices. mostly just for admins
         {
-            var tokens = GetAll(userId).Cast<RefreshTokens>().ToList();
+            var tokens = GetByUserId(userId).Cast<RefreshToken>().ToList();
             if (tokens.Any()) db.RefreshTokens.RemoveRange(tokens);
-        }
-
-        public bool IsValid(int userId, string refreshToken)
-        {
-            var token = Get(userId, refreshToken);
-            if (token != null)
-            {
-                Delete(token);
-                return true;
-            }
-            return false;
         }
 
         public int Save()
