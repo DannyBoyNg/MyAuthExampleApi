@@ -3,7 +3,6 @@ using Services.JwtTokenService;
 using Services.SimpleTokenService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using myAuthExampleApi.Models;
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,6 @@ namespace myAuthExampleApi.Controllers
     [Route("api/user/[action]")]
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration configuration;
         private readonly IUserService userService;
         private readonly IJwtTokenService jwtTokenService;
         private readonly ISimpleTokenService simpleTokenService;
@@ -28,14 +26,12 @@ namespace myAuthExampleApi.Controllers
         private readonly IEmailService emailService;
 
         public AuthController(
-            IConfiguration configuration,
             IUserService userService,
             IJwtTokenService jwtTokenService,
             ISimpleTokenService simpleTokenService,
             IPasswordHashingService hashingService,
             IEmailService emailService)
         {
-            this.configuration = configuration;
             this.userService = userService;
             this.jwtTokenService = jwtTokenService;
             this.simpleTokenService = simpleTokenService;
@@ -97,21 +93,22 @@ namespace myAuthExampleApi.Controllers
         [AllowAnonymous]
         public ActionResult Register(string username, string email, string password)
         {
+            //Input validation
             var errors = new List<string>();
             if (!userService.IsEmailUnique(email)) errors.Add("Email already exists");
             if (!userService.IsNameUnique(username)) errors.Add("Username already exists");
             if (!emailService.IsEmailValid(email)) errors.Add("Email is not valid");
             if (errors.Any()) return BadRequest(errors);
-
+            //Create new user
             var passwordHash = hashingService.HashPassword(password);
-            var user = new User
+            IUser user = new User
             {
                 UserName = username,
                 Email = email,
                 PasswordHash = passwordHash,
                 Active = true,
             };
-            userService.Create(user as IUser);
+            userService.Create(user);
             var simpleToken = simpleTokenService.Generate();
             simpleTokenService.StoreToken(user.Id, simpleToken);
             //Don't send email if no email host settings are defined
@@ -146,9 +143,9 @@ Your account has been created. Click on this link to confirm your email: http://
         public ActionResult ForgotUsername(string email)
         {
             //Don't send email if no email host settings are defined
-            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email settings are not set.");
+            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email host setting is not set.");
             //Logic
-            var domain = configuration["EmailSettings:Domain"];
+            var domain = emailService.Settings.Domain;
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
             if (user.Active == false) return BadRequest("Unable to retrieve username. Account is not active.");
@@ -165,9 +162,9 @@ Your account has been created. Click on this link to confirm your email: http://
         public ActionResult ForgotPassword(string email)
         {
             //Don't send email if no email host settings are defined
-            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email settings are not set.");
+            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email host setting is not set.");
             //Logic
-            var domain = configuration["Domain"];
+            var domain = emailService.Settings.Domain;
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
             if (user.Active == false) return BadRequest("Cannot reset password. Account is not active.");

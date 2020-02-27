@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Services.SimpleTokenService;
 using Services.UserService;
 using System;
 
@@ -23,6 +24,7 @@ namespace myAuthExampleApi.Controllers
             var e = context.Error;
             Request.Path = context.Path;
             if (e is NotAuthorizedException || e is NotAuthenticatedException) return Unauthorized();
+            if (e is CooldownException) Response.Headers.Add("cooldownLeft", (e as CooldownException).CooldownLeft.Value.Seconds.ToString());
             var msg = GetBaseExceptionMessage(e);
             return BadRequest(msg);
         }

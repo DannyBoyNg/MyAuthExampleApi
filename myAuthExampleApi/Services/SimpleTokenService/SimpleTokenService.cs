@@ -47,7 +47,7 @@ namespace Services.SimpleTokenService
 
         public void StoreToken(int userId, string simpleToken)
         {
-            if (InCooldownPeriod(userId, out _)) throw new Exception($"You must wait at least {Settings.CooldownPeriodInMinutes} minutes to perform this action again");
+            if (InCooldownPeriod(userId, out TimeSpan? cooldownLeft)) throw new CooldownException($"You must wait at least {Settings.CooldownPeriodInMinutes} minutes to perform this action again") { CooldownLeft = cooldownLeft };
             SimpleTokenRepo.Insert(userId, simpleToken);
             SimpleTokenRepo.Save();
         }

@@ -12,6 +12,7 @@
         public void Create(IUser user)
         {
             UserRepo.Insert(user as IUser);
+            UserRepo.Save();
         }
 
         public IUser GetByEmail(string email)
@@ -43,7 +44,7 @@
         {
             var user = GetById(userId);
             user.PasswordHash = PasswordHash;
-            UserRepo.SaveAsync();
+            UserRepo.Save();
         }
 
         public bool IsEmailConfirmed(int userId)
@@ -56,7 +57,7 @@
         {
             var user = GetById(userId);
             user.EmailConfirmed = true;
-            UserRepo.SaveAsync();
+            UserRepo.Save();
         }
     }
 }

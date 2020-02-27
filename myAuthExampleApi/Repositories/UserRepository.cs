@@ -55,10 +55,5 @@ namespace myAuthExampleApi.Repositories
         {
             return db.SaveChanges();
         }
-
-        public async Task<int> SaveAsync()
-        {
-            return await db.SaveChangesAsync();
-        }
     }
 }

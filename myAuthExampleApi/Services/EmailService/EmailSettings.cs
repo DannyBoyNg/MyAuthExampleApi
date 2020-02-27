@@ -4,7 +4,7 @@ namespace Services.EmailService
 {
     public class EmailSettings
     {
-        public string Domain { get; set; }
+        public string Domain { get; set; } = "mydomain.net";
         public string Host { get; set; }
         public int? Port { get; set; }
         public ICredentialsByHost Credentials { get; set; }

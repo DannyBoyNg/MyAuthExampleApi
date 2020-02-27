@@ -12,6 +12,5 @@ namespace Services.UserService
         bool IsEmailUnique(string email);
         bool IsNameUnique(string username);
         int Save();
-        Task<int> SaveAsync();
     }
 }
