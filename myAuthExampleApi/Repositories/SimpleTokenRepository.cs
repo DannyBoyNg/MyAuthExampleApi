@@ -1,4 +1,4 @@
-﻿using myAuthExampleApi.Models;
+﻿using myAuthExampleApi.Models.DbModels;
 using Services.SimpleTokenService;
 using System.Collections.Generic;
 using System.Linq;

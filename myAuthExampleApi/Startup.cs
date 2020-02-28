@@ -15,6 +15,7 @@ using Services.EmailService;
 using Services.UserService;
 using myAuthExampleApi.Repositories;
 using System;
+using myAuthExampleApi.Models.DbModels;
 
 namespace myAuthExampleApi
 {

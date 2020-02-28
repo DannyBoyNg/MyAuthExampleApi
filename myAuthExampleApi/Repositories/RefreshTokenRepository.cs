@@ -1,4 +1,4 @@
-﻿using myAuthExampleApi.Models;
+﻿using myAuthExampleApi.Models.DbModels;
 using Services.JwtTokenService;
 using System.Collections.Generic;
 using System.Linq;

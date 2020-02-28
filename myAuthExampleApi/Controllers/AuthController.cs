@@ -11,6 +11,7 @@ using System.Security.Claims;
 using Services.PasswordHashingService;
 using Services.UserService;
 using System.Threading;
+using myAuthExampleApi.Models.DbModels;
 
 namespace myAuthExampleApi.Controllers
 {
