@@ -3,7 +3,6 @@ using Services.JwtTokenService;
 using Services.SimpleTokenService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using myAuthExampleApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,16 +122,15 @@ Your account has been created. Click on this link to confirm your email: http://
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult ResetPassword(int userId, string simpleToken, string password, string confirmPassword)
+        public ActionResult ResetPassword(int userId, string token, string password, string confirmPassword)
         {
             //Input validation
             if (password == null) throw new ArgumentNullException(nameof(password));
             //Logic
+            simpleTokenService.Validate(userId, token);
             var user = userService.GetById(userId);
             if (user == null) return BadRequest();
             if (user.Active == false) return BadRequest("Account is not active.");
-            simpleTokenService.Validate(userId, simpleToken);
-            if (password.Length < 8) return BadRequest("Password is not at least 8 characters long.");
             if (password != confirmPassword) return BadRequest("Password is not equal to confirm password.");
             userService.UpdatePassword(userId, hashingService.HashPassword(password));
             return NoContent();

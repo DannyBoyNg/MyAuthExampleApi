@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using myAuthExampleApi.Models;
+using myAuthExampleApi.Models.DbModels;
 
 namespace myAuthExampleApi.Migrations
 {

@@ -1,6 +1,6 @@
 ﻿using Services.JwtTokenService;
 
-namespace myAuthExampleApi.Models
+namespace myAuthExampleApi.Models.DbModels
 {
     public partial class RefreshToken : IRefreshToken
     {

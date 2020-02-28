@@ -1,6 +1,6 @@
 ﻿using Services.SimpleTokenService;
 
-namespace myAuthExampleApi.Models
+namespace myAuthExampleApi.Models.DbModels
 {
     public partial class SimpleToken : ISimpleToken
     {

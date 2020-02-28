@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace myAuthExampleApi.Models
+namespace myAuthExampleApi.Models.DbModels
 {
     public partial class MyAuthExampleContext : DbContext
     {

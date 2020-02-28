@@ -1,7 +1,6 @@
-﻿using myAuthExampleApi.Models;
+﻿using myAuthExampleApi.Models.DbModels;
 using Services.UserService;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace myAuthExampleApi.Repositories
 {

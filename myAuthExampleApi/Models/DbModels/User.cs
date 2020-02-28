@@ -1,6 +1,6 @@
 ﻿using Services.UserService;
 
-namespace myAuthExampleApi.Models
+namespace myAuthExampleApi.Models.DbModels
 {
     public partial class User : IUser
     {

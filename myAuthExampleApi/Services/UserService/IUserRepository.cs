@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Services.UserService
+﻿namespace Services.UserService
 {
     public interface IUserRepository
     {
