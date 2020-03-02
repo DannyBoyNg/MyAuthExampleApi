@@ -41,8 +41,8 @@ namespace myAuthExampleApi
                 .AddUserService()
                 .AddPasswordHashingService()
                 .AddEmailService(options => {
-                    options.Domain = "erasmusmc.nl";
-                    options.Host = "mail.erasmusmc.nl";
+                    options.Domain = Configuration["EmailSettings:Domain"];
+                    options.Host = Configuration["EmailSettings:Host"];
                 })
                 .AddSimpleTokenService(options => options.TokenExpirationInMinutes = 1440)
                 .AddJwtTokenService(Configuration.GetSection("JwtSettings"));

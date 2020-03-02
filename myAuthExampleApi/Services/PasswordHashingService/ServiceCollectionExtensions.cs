@@ -25,13 +25,5 @@ namespace Services.PasswordHashingService
             serviceCollection.Configure(options);
             return serviceCollection;
         }
-
-        public static IServiceCollection AddPasswordHashingService(this IServiceCollection serviceCollection, IConfiguration config = null, Action<PasswordHashingSettings> options = null)
-        {
-            serviceCollection.AddScoped<IPasswordHashingService, PasswordHashingService>();
-            if (config != null) serviceCollection.Configure<PasswordHashingSettings>(config);
-            if (options != null) serviceCollection.Configure(options);
-            return serviceCollection;
-        }
     }
 }

@@ -25,13 +25,5 @@ namespace Services.SimpleTokenService
             serviceCollection.Configure(options);
             return serviceCollection;
         }
-
-        public static IServiceCollection AddSimpleTokenService(this IServiceCollection serviceCollection, IConfiguration config = null, Action<SimpleTokenSettings> options = null)
-        {
-            serviceCollection.AddScoped<ISimpleTokenService, SimpleTokenService>();
-            if (config != null) serviceCollection.Configure<SimpleTokenSettings>(config);
-            if (options != null) serviceCollection.Configure(options);
-            return serviceCollection;
-        }
     }
 }
