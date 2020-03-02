@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
 
-namespace Services.EmailService
+namespace Services.EmailServ
 {
     public class EmailService : IEmailService
     {
         public EmailSettings Settings { get; set; }
 
-        public EmailService(IOptions<EmailSettings> settings) => Settings = settings.Value;
+        public EmailService() => Settings = new EmailSettings();
+
+        public EmailService(IOptions<EmailSettings> settings) => Settings = settings?.Value;
 
         public async void SendEmail(MailAddress from, IEnumerable<string> to, string subject, string body, IEnumerable<File> files = null, IEnumerable<string> cc = null, IEnumerable<string> bcc = null, MailPriority? priority = null)
         {
-            if (Settings.Domain == null || Settings.Host == null) throw new System.Exception("No mailsettings found. Please contact site admin.");
+            if (Settings.Domain == null) throw new NoDomainFoundException();
+            if (Settings.Host == null) throw new NoHostFoundException();
             using var smtpClient = new SmtpClient();
             using var message = new MailMessage();
 
@@ -39,15 +42,16 @@ namespace Services.EmailService
             {
                 foreach (var file in files)
                 {
-                    var stream = new MemoryStream(file.FileData);
+                    var stream = new MemoryStream(file.FileData as byte[]);
                     var attachment = new Attachment(stream, file.FileName);
                     message.Attachments.Add(attachment);
                 }
             }
 
-            await smtpClient.SendMailAsync(message);
+            await smtpClient.SendMailAsync(message).ConfigureAwait(false);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions not of interest")]
         public bool IsEmailValid(string email)
         {
             try

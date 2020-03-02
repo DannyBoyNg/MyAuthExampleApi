@@ -1,4 +1,4 @@
-﻿namespace Services.PasswordHashingService
+﻿namespace Services.PasswordHashingServ
 {
     public enum PasswordVerificationResult
     {

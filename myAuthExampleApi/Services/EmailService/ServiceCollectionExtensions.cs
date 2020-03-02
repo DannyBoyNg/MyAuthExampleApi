@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Services.EmailService
+namespace Services.EmailServ
 {
     public static class ServiceCollectionExtensions
     {

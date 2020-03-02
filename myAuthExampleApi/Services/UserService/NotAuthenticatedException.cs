@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Services.UserService
+namespace Services.UserServ
 {
     public class NotAuthenticatedException : Exception
     {

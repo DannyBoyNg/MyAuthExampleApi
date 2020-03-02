@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Services.JwtTokenService
+namespace Services.JwtTokenServ
 {
     public static class ServiceCollectionExtensions
     {

@@ -19,7 +19,7 @@ namespace myAuthExampleApi.Models.DbModels
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<RefreshToken>(entity =>
+            modelBuilder?.Entity<RefreshToken>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.Token });
 

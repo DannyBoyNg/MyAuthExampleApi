@@ -8,18 +8,24 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
-namespace Services.JwtTokenService
+namespace Services.JwtTokenServ
 {
     public class JwtTokenService : IJwtTokenService
     {
         public JwtTokenSettings Settings { get; set; }
         public IRefreshTokenRepository RefreshTokenRepo { get; }
 
+        public JwtTokenService(IRefreshTokenRepository refreshTokenRepo)
+        {
+            Settings = new JwtTokenSettings();
+            RefreshTokenRepo = refreshTokenRepo;
+        }
+
         public JwtTokenService(
             IOptions<JwtTokenSettings> settings,
             IRefreshTokenRepository refreshTokenRepo)
         {
-            Settings = settings.Value;
+            Settings = settings?.Value;
             RefreshTokenRepo = refreshTokenRepo;
         }
 
@@ -80,7 +86,7 @@ namespace Services.JwtTokenService
             var principal = tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out SecurityToken securityToken);
             if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new SecurityTokenException("Invalid access token");
+                throw new InvalidAccessTokenException();
             }
             return principal;
         }
@@ -98,7 +104,7 @@ namespace Services.JwtTokenService
             RefreshTokenRepo.Save();
         }
 
-        public DateTime GetCreationTimeFromRefreshToken(string refreshToken)
+        public static DateTime GetCreationTimeFromRefreshToken(string refreshToken)
         {
             if (refreshToken == null) throw new ArgumentNullException(nameof(refreshToken));
             refreshToken = refreshToken.Replace('_', '/').Replace('-', '+');
@@ -128,8 +134,8 @@ namespace Services.JwtTokenService
             var dbToken = tokens.Where(x => x.Token == refreshToken).SingleOrDefault();
             if (dbToken != null) RefreshTokenRepo.Delete(dbToken);
             RefreshTokenRepo.Save();
-            if (tokenExpired) throw new Exception("Session expired");
-            if (dbToken == null) throw new Exception("Invalid token");
+            if (tokenExpired) throw new SessionExpiredException();
+            if (dbToken == null) throw new InvalidRefreshTokenException();
         }
 
         private bool IsRefreshTokenExpired(string refreshToken)

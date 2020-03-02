@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Services.SimpleTokenService
+namespace Services.SimpleTokenServ
 {
     public interface ISimpleTokenService
     {

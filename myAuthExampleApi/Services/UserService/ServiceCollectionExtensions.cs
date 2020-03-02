@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Services.UserService
+namespace Services.UserServ
 {
     public static class ServiceCollectionExtensions
     {

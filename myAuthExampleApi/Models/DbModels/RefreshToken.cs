@@ -1,4 +1,4 @@
-﻿using Services.JwtTokenService;
+﻿using Services.JwtTokenServ;
 
 namespace myAuthExampleApi.Models.DbModels
 {

@@ -1,4 +1,4 @@
-﻿namespace Services.JwtTokenService
+﻿namespace Services.JwtTokenServ
 {
     public class JwtToken
     {

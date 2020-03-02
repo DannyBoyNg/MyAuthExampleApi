@@ -2,18 +2,24 @@
 using System;
 using System.Linq;
 
-namespace Services.SimpleTokenService
+namespace Services.SimpleTokenServ
 {
     public class SimpleTokenService : ISimpleTokenService
     {
         public SimpleTokenSettings Settings { get; set; }
         ISimpleTokenRepository SimpleTokenRepo { get; }
 
+        public SimpleTokenService(ISimpleTokenRepository simpleTokenRepo)
+        {
+            Settings = new SimpleTokenSettings();
+            SimpleTokenRepo = simpleTokenRepo;
+        }
+
         public SimpleTokenService(
             IOptions<SimpleTokenSettings> options,
             ISimpleTokenRepository simpleTokenRepo)
         {
-            Settings = options.Value;
+            Settings = options?.Value;
             SimpleTokenRepo = simpleTokenRepo;
         }
 
@@ -41,8 +47,8 @@ namespace Services.SimpleTokenService
             var dbToken = tokens.Where(x => x.Token == simpleToken).SingleOrDefault();
             if (dbToken != null) SimpleTokenRepo.Delete(dbToken);
             SimpleTokenRepo.Save();
-            if (tokenExpired) throw new Exception("Token expired");
-            if (dbToken == null) throw new Exception("Invalid token");
+            if (tokenExpired) throw new TokenExpiredException();
+            if (dbToken == null) throw new InvalidTokenException();
         }
 
         public void StoreToken(int userId, string simpleToken)

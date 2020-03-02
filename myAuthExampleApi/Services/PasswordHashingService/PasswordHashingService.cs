@@ -4,13 +4,15 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
-namespace Services.PasswordHashingService
+namespace Services.PasswordHashingServ
 {
     public class PasswordHashingService : IPasswordHashingService
     {
         public PasswordHashingSettings Settings { get; set; }
 
-        public PasswordHashingService(IOptions<PasswordHashingSettings> settings) => Settings = settings.Value;
+        public PasswordHashingService() => Settings = new PasswordHashingSettings();
+
+        public PasswordHashingService(IOptions<PasswordHashingSettings> settings) => Settings = settings?.Value;
 
         //Public api
         public string HashPassword(string password)
@@ -70,6 +72,7 @@ namespace Services.PasswordHashingService
             return outputBytes;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions not of interest")]
         private bool VerifyHashedPasswordInternal(byte[] hashedPassword, string password, out int iterCount)
         {
             iterCount = default;

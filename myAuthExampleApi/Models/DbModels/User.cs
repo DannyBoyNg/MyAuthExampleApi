@@ -1,4 +1,4 @@
-﻿using Services.UserService;
+﻿using Services.UserServ;
 
 namespace myAuthExampleApi.Models.DbModels
 {

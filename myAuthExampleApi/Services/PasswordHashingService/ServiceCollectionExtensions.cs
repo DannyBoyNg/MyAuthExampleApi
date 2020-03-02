@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Services.PasswordHashingService
+namespace Services.PasswordHashingServ
 {
     public static class ServiceCollectionExtensions
     {

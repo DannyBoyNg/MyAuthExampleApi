@@ -1,4 +1,4 @@
-﻿namespace Services.UserService
+﻿namespace Services.UserServ
 {
     public class UserService : IUserService
     {
@@ -22,7 +22,7 @@
 
         public IUser GetById(int userId)
         {
-            return UserRepo.Get(userId);
+            return UserRepo.GetById(userId);
         }
 
         public IUser GetByName(string username)

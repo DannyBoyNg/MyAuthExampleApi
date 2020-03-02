@@ -1,5 +1,5 @@
 ﻿using myAuthExampleApi.Models.DbModels;
-using Services.SimpleTokenService;
+using Services.SimpleTokenServ;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,11 +12,6 @@ namespace myAuthExampleApi.Repositories
         public SimpleTokenRepository(MyAuthExampleContext db)
         {
             this.db = db;
-        }
-
-        public ISimpleToken Get(int userId, string simpleToken)
-        {
-            return db.SimpleTokens.Where(x => x.UserId == userId && x.Token == simpleToken).SingleOrDefault();
         }
 
         public IEnumerable<ISimpleToken> GetByUserId(int userId)

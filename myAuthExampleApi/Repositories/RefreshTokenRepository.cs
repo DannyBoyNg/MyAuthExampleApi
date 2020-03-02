@@ -1,5 +1,5 @@
 ﻿using myAuthExampleApi.Models.DbModels;
-using Services.JwtTokenService;
+using Services.JwtTokenServ;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,11 +12,6 @@ namespace myAuthExampleApi.Repositories
         public RefreshTokenRepository(MyAuthExampleContext db)
         {
             this.db = db;
-        }
-
-        public IRefreshToken Get(int userId, string refreshToken)
-        {
-            return db.RefreshTokens.Where(x => x.UserId == userId && x.Token == refreshToken).SingleOrDefault();
         }
 
         public IEnumerable<IRefreshToken> GetByUserId(int userId)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 
-namespace Services.PasswordHashingService
+namespace Services.PasswordHashingServ
 {
     public class PasswordHashingSettings
     {

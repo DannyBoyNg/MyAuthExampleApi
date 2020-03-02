@@ -1,5 +1,5 @@
 ﻿
-namespace Services.PasswordHashingService
+namespace Services.PasswordHashingServ
 {
     public interface IPasswordHashingService
     {

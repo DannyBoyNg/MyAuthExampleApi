@@ -6,7 +6,7 @@ namespace myAuthExampleApi.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            migrationBuilder?.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
                 {
@@ -56,7 +56,7 @@ namespace myAuthExampleApi.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            migrationBuilder?.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(

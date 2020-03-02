@@ -1,6 +1,6 @@
 using System.Text;
-using Services.JwtTokenService;
-using Services.SimpleTokenService;
+using Services.JwtTokenServ;
+using Services.SimpleTokenServ;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Services.PasswordHashingService;
-using Services.EmailService;
-using Services.UserService;
+using Services.PasswordHashingServ;
+using Services.EmailServ;
+using Services.UserServ;
 using myAuthExampleApi.Repositories;
 using System;
 using myAuthExampleApi.Models.DbModels;
@@ -83,7 +83,7 @@ namespace myAuthExampleApi
         }
 
         //HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

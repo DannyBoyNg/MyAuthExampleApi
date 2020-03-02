@@ -1,6 +1,6 @@
-﻿using Services.EmailService;
-using Services.JwtTokenService;
-using Services.SimpleTokenService;
+﻿using Services.EmailServ;
+using Services.JwtTokenServ;
+using Services.SimpleTokenServ;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,10 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Security.Claims;
-using Services.PasswordHashingService;
-using Services.UserService;
+using Services.PasswordHashingServ;
+using Services.UserServ;
 using System.Threading;
 using myAuthExampleApi.Models.DbModels;
+using System.Globalization;
 
 namespace myAuthExampleApi.Controllers
 {
@@ -59,7 +60,7 @@ namespace myAuthExampleApi.Controllers
             if (user.Active != true) return BadRequest("Account not active");
             if (hashingService.VerifyHashedPassword(user.PasswordHash, password) == PasswordVerificationResult.Failed) return BadRequest("Invalid credentials");
             //create claims
-            var claims = new List<Claim> { new Claim("uid", user.Id.ToString(), ClaimValueTypes.Integer) };
+            var claims = new List<Claim> { new Claim("uid", user.Id.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer) };
             //create tokens
             var accessToken = jwtTokenService.GenerateAccessToken(user.UserName, claims);
             var refreshToken = jwtTokenService.GenerateRefreshToken();

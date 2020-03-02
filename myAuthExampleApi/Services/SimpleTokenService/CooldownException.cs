@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Services.SimpleTokenService
+namespace Services.SimpleTokenServ
 {
     [Serializable]
-    internal class CooldownException : Exception
+    public class CooldownException : Exception
     {
         public TimeSpan? CooldownLeft { get; set; }
 

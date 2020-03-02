@@ -1,5 +1,5 @@
 ﻿using myAuthExampleApi.Models.DbModels;
-using Services.UserService;
+using Services.UserServ;
 using System.Linq;
 
 namespace myAuthExampleApi.Repositories
@@ -15,11 +15,11 @@ namespace myAuthExampleApi.Repositories
 
         public void Delete(int userId)
         {
-            var user = Get(userId);
+            var user = GetById(userId);
             db.Users.Remove(user as User);
         }
 
-        public IUser Get(int userId)
+        public IUser GetById(int userId)
         {
             return db.Users.Where(x => x.Id == userId).SingleOrDefault();
         }

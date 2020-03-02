@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Services.JwtTokenService
+namespace Services.JwtTokenServ
 {
     public interface IJwtTokenService
     {

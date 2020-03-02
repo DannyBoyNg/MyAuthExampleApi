@@ -1,4 +1,4 @@
-﻿using Services.SimpleTokenService;
+﻿using Services.SimpleTokenServ;
 
 namespace myAuthExampleApi.Models.DbModels
 {
