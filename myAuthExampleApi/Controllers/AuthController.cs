@@ -1,5 +1,5 @@
 ﻿using Services.EmailServ;
-using Services.JwtTokenServ;
+using DannyBoyNg.Services;
 using Services.SimpleTokenServ;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +62,7 @@ namespace myAuthExampleApi.Controllers
             //create claims
             var claims = new List<Claim> { new Claim("uid", user.Id.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer) };
             //create tokens
-            var accessToken = jwtTokenService.GenerateAccessToken(user.UserName, claims);
+            var accessToken = jwtTokenService.GenerateAccessToken(user.UserName, null, claims);
             var refreshToken = jwtTokenService.GenerateRefreshToken();
             //store refresh token
             jwtTokenService.StoreRefreshToken(user.Id, refreshToken);
@@ -83,7 +83,7 @@ namespace myAuthExampleApi.Controllers
             var user = userService.GetById(userId);
             //create new tokens
             var claims = new List<Claim> { new Claim("uid", uid) };
-            var newAccessToken = jwtTokenService.GenerateAccessToken(user.UserName, claims);
+            var newAccessToken = jwtTokenService.GenerateAccessToken(user.UserName, null, claims);
             var newRefreshToken = jwtTokenService.GenerateRefreshToken();
             //store refresh token in data store
             jwtTokenService.StoreRefreshToken(userId, newRefreshToken);

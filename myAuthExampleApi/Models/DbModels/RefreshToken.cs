@@ -1,4 +1,4 @@
-﻿using Services.JwtTokenServ;
+﻿using DannyBoyNg.Services;
 
 namespace myAuthExampleApi.Models.DbModels
 {

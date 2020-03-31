@@ -12,13 +12,6 @@ namespace Services.EmailServ
             return serviceCollection;
         }
 
-        public static IServiceCollection AddEmailService(this IServiceCollection serviceCollection, IConfiguration config)
-        {
-            serviceCollection.AddScoped<IEmailService, EmailService>();
-            serviceCollection.Configure<EmailSettings>(config);
-            return serviceCollection;
-        }
-
         public static IServiceCollection AddEmailService(this IServiceCollection serviceCollection, Action<EmailSettings> options)
         {
             serviceCollection.AddScoped<IEmailService, EmailService>();

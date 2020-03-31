@@ -1,5 +1,5 @@
 using System.Text;
-using Services.JwtTokenServ;
+using DannyBoyNg.Services;
 using Services.SimpleTokenServ;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -14,8 +14,8 @@ using Services.PasswordHashingServ;
 using Services.EmailServ;
 using Services.UserServ;
 using myAuthExampleApi.Repositories;
-using System;
 using myAuthExampleApi.Models.DbModels;
+using System.Globalization;
 
 namespace myAuthExampleApi
 {
@@ -31,7 +31,10 @@ namespace myAuthExampleApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //Add services
+            /////////////////////
+            //Add own services
+            /////////////////////
+            
             services
                 .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
                 .AddScoped<ISimpleTokenRepository, SimpleTokenRepository>()
@@ -40,12 +43,17 @@ namespace myAuthExampleApi
             services
                 .AddUserService()
                 .AddPasswordHashingService()
-                .AddEmailService(options => {
+                .AddEmailService(options =>
+                {
                     options.Domain = Configuration["EmailSettings:Domain"];
                     options.Host = Configuration["EmailSettings:Host"];
                 })
-                .AddSimpleTokenService(options => options.TokenExpirationInMinutes = 1440)
-                .AddJwtTokenService(Configuration.GetSection("JwtSettings"));
+                .AddSimpleTokenService(options => options.TokenExpirationInMinutes = 1440);
+
+            ////////////////////////////
+            //Add external services
+            ////////////////////////////
+
             //Configure database connection
             services.AddDbContext<MyAuthExampleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Database_prod")));
             //Configure CORS
@@ -59,23 +67,32 @@ namespace myAuthExampleApi
                     .WithExposedHeaders(new string[] { "Content-Disposition", "WWW-Authenticate" })
                     .AllowCredentials());
             });
-            //Configure JWT Auth
+            //Add JWT Token Services and settings
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = Configuration["JwtSettings:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = Configuration["JwtSettings:Audience"],
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"])),
+                ValidateLifetime = true,
+                SaveSigninToken = true,
+            };
             services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ClockSkew = new TimeSpan(0, 0, 0), //Default is 300. Disable clock skew.
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        SaveSigninToken = true,
-                        ValidIssuer = Configuration["JwtSettings:Issuer"],
-                        ValidAudience = Configuration["JwtSettings:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"])),
-                    };
+                .AddJwtTokenService(options => {
+                    options.SecurityAlgorithm = SecurityAlgorithm.HS256;
+                    options.AccessTokenExpirationInMinutes = int.Parse(Configuration["JwtSettings:AccessTokenExpirationInMinutes"], CultureInfo.InvariantCulture); //Default: 60
+                    options.RefreshTokenExpirationInHours = int.Parse(Configuration["JwtSettings:RefreshTokenExpirationInHours"], CultureInfo.InvariantCulture); //Default: 2
+                    options.TokenValidationParameters = tokenValidationParameters;
                 });
+            //Configure JWT Authentication
+            services
+                .AddAuthentication(options => {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options => options.TokenValidationParameters = tokenValidationParameters);
             //Add Support for controllers
             services
                 .AddControllers()
