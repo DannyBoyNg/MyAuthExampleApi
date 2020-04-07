@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Services.SimpleTokenServ;
+using Ng.Services;
 using Services.UserServ;
 using System;
 using System.Globalization;

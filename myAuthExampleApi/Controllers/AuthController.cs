@@ -1,6 +1,4 @@
-﻿using Services.EmailServ;
-using DannyBoyNg.Services;
-using Services.SimpleTokenServ;
+﻿using Ng.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Security.Claims;
-using Services.PasswordHashingServ;
 using Services.UserServ;
 using System.Threading;
 using myAuthExampleApi.Models.DbModels;
@@ -24,14 +21,14 @@ namespace myAuthExampleApi.Controllers
         private readonly IJwtTokenService jwtTokenService;
         private readonly ISimpleTokenService simpleTokenService;
         private readonly IPasswordHashingService hashingService;
-        private readonly IEmailService emailService;
+        private readonly ILegacyEmailService emailService;
 
         public AuthController(
             IUserService userService,
             IJwtTokenService jwtTokenService,
             ISimpleTokenService simpleTokenService,
             IPasswordHashingService hashingService,
-            IEmailService emailService)
+            ILegacyEmailService emailService)
         {
             this.userService = userService;
             this.jwtTokenService = jwtTokenService;
@@ -110,15 +107,14 @@ namespace myAuthExampleApi.Controllers
                 Active = true,
             };
             userService.Create(user);
-            var simpleToken = simpleTokenService.Generate();
+            var simpleToken = simpleTokenService.GenerateSimpleToken();
             simpleTokenService.StoreToken(user.Id, simpleToken);
             //Don't send email if no email host settings are defined
             if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return NoContent();
-            var domain = emailService.Settings.Domain;
             var body = $@"Welcome,
 
 Your account has been created. Click on this link to confirm your email: http://localhost:4200/confirmemail/{user.Id}/{simpleToken}";
-            emailService.SendEmail(new MailAddress($"no-reply@{domain}"), new string[] { email }, "New account", body);
+            emailService.SendEmail(new MailAddress($"no-reply@mydomain.net"), new string[] { email }, "New account", body);
             return NoContent();
         }
 
@@ -129,7 +125,7 @@ Your account has been created. Click on this link to confirm your email: http://
             //Input validation
             if (password == null) throw new ArgumentNullException(nameof(password));
             //Logic
-            simpleTokenService.Validate(userId, token);
+            simpleTokenService.ValidateToken(userId, token);
             var user = userService.GetById(userId);
             if (user == null) return BadRequest();
             if (user.Active == false) return BadRequest("Account is not active.");
@@ -145,15 +141,14 @@ Your account has been created. Click on this link to confirm your email: http://
             //Don't send email if no email host settings are defined
             if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email host setting is not set.");
             //Logic
-            var domain = emailService.Settings.Domain;
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
             if (user.Active == false) return BadRequest("Unable to retrieve username. Account is not active.");
             if (!emailService.IsEmailValid(email)) return BadRequest("Email is not a valid email address");
-            var token = simpleTokenService.Generate();
+            var token = simpleTokenService.GenerateSimpleToken();
             simpleTokenService.StoreToken(user.Id, token);
             var body = $@"Your username is: {user.UserName}";
-            emailService.SendEmail(new MailAddress($"no-reply@{domain}"), new string[] { email }, "Username", body);
+            emailService.SendEmail(new MailAddress($"no-reply@mydomain.net"), new string[] { email }, "Username", body);
             return NoContent();
         }
 
@@ -164,15 +159,14 @@ Your account has been created. Click on this link to confirm your email: http://
             //Don't send email if no email host settings are defined
             if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email host setting is not set.");
             //Logic
-            var domain = emailService.Settings.Domain;
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
             if (user.Active == false) return BadRequest("Cannot reset password. Account is not active.");
             if (!emailService.IsEmailValid(email)) return BadRequest("Email is not a valid email address");
-            var token = simpleTokenService.Generate();
+            var token = simpleTokenService.GenerateSimpleToken();
             simpleTokenService.StoreToken(user.Id, token);
             var body = $@"A password reset was requested for this account. Click on the following link to reset your password: http://localhost:4200/resetpassword/{user.Id}/{token}";
-            emailService.SendEmail(new MailAddress($"no-reply@{domain}"), new string[] { email }, "Password reset", body);
+            emailService.SendEmail(new MailAddress($"no-reply@mydomain.net"), new string[] { email }, "Password reset", body);
             return NoContent();
         }
 
@@ -181,7 +175,7 @@ Your account has been created. Click on this link to confirm your email: http://
         public ActionResult ConfirmEmail(int userId, string token)
         {
             if (userService.IsEmailConfirmed(userId)) return BadRequest("Your email has already been confirmed");
-            simpleTokenService.Validate(userId, token);
+            simpleTokenService.ValidateToken(userId, token);
             userService.SetEmailConfirmed(userId);
             return NoContent();
         }

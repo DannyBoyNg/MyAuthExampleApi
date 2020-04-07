@@ -1,5 +1,5 @@
 ﻿using myAuthExampleApi.Models.DbModels;
-using DannyBoyNg.Services;
+using Ng.Services;
 using System.Collections.Generic;
 using System.Linq;
 

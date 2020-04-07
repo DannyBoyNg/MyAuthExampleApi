@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DannyBoyNg.JwtTokenService" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
@@ -17,6 +16,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Ng.JwtTokenService" Version="1.0.0" />
+    <PackageReference Include="Ng.LegacyEmailService" Version="1.0.0" />
+    <PackageReference Include="Ng.PasswordHashingService" Version="1.0.0" />
+    <PackageReference Include="Ng.SimpleTokenService" Version="1.0.0" />
+    <PackageReference Include="Ng.UserAgentService" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

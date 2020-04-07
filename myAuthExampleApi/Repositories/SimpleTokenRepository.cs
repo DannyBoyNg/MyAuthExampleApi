@@ -1,5 +1,5 @@
 ﻿using myAuthExampleApi.Models.DbModels;
-using Services.SimpleTokenServ;
+using Ng.Services;
 using System.Collections.Generic;
 using System.Linq;
 

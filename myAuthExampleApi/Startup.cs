@@ -1,6 +1,5 @@
 using System.Text;
-using DannyBoyNg.Services;
-using Services.SimpleTokenServ;
+using Ng.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Services.PasswordHashingServ;
-using Services.EmailServ;
 using Services.UserServ;
 using myAuthExampleApi.Repositories;
 using myAuthExampleApi.Models.DbModels;
@@ -45,7 +42,6 @@ namespace myAuthExampleApi
                 .AddPasswordHashingService()
                 .AddEmailService(options =>
                 {
-                    options.Domain = Configuration["EmailSettings:Domain"];
                     options.Host = Configuration["EmailSettings:Host"];
                 })
                 .AddSimpleTokenService(options => options.TokenExpirationInMinutes = 1440);

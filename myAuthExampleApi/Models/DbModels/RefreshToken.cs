@@ -1,4 +1,4 @@
-﻿using DannyBoyNg.Services;
+﻿using Ng.Services;
 
 namespace myAuthExampleApi.Models.DbModels
 {

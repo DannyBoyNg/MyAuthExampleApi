@@ -1,4 +1,4 @@
-﻿using Services.SimpleTokenServ;
+﻿using Ng.Services;
 
 namespace myAuthExampleApi.Models.DbModels
 {
