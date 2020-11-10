@@ -71,7 +71,7 @@ namespace myAuthExampleApi.Controllers
         public ActionResult Refresh(string accessToken, string refreshToken)
         {
             //get userId from access token
-            var claimsPrincipal = jwtTokenService.GetPrincipalFromExpiredAccessToken(accessToken);
+            var claimsPrincipal = jwtTokenService.GetClaimsFromExpiredAccessToken(accessToken);
             var uid = jwtTokenService.GetClaim(claimsPrincipal, "uid");
             if (!int.TryParse(uid, out int userId)) return Unauthorized("Invalid access token");
             //validate refresh token (Optionally delete refreshToken after validation)
@@ -183,7 +183,7 @@ Your account has been created. Click on this link to confirm your email: http://
         [HttpPost]
         public ActionResult ChangePassword(string currentPassword, string newPassword, string confirmPassword)
         {
-            var user = userService.GetByName(User.Identity.Name);
+            var user = userService.GetByName(User?.Identity?.Name ?? "");
             if (newPassword != confirmPassword) return BadRequest("New password and confirm password are not equal.");
             if (user == null) return BadRequest("User not found.");
             if (!user.Active) return BadRequest("User is not active.");
