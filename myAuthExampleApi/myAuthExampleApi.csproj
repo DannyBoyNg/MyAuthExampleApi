@@ -16,9 +16,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Ng.JwtTokenService" Version="2.0.0" />
-    <PackageReference Include="Ng.LegacyEmailService" Version="1.0.1" />
     <PackageReference Include="Ng.PasswordHashingService" Version="1.0.1" />
-    <PackageReference Include="Ng.SimpleTokenService" Version="1.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 

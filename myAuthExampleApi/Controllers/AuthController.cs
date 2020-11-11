@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Security.Claims;
 using Services.UserServ;
 using System.Threading;
@@ -20,22 +19,16 @@ namespace myAuthExampleApi.Controllers
     {
         private readonly IUserService userService;
         private readonly IJwtTokenService jwtTokenService;
-        private readonly ISimpleTokenService simpleTokenService;
         private readonly IPasswordHashingService hashingService;
-        private readonly ILegacyEmailService emailService;
 
         public AuthController(
             IUserService userService,
             IJwtTokenService jwtTokenService,
-            ISimpleTokenService simpleTokenService,
-            IPasswordHashingService hashingService,
-            ILegacyEmailService emailService)
+            IPasswordHashingService hashingService)
         {
             this.userService = userService;
             this.jwtTokenService = jwtTokenService;
-            this.simpleTokenService = simpleTokenService;
             this.hashingService = hashingService;
-            this.emailService = emailService;
         }
 
         [Route("/Token")]
@@ -92,7 +85,6 @@ namespace myAuthExampleApi.Controllers
             var errors = new List<string>();
             if (!userService.IsEmailUnique(email)) errors.Add("Email already exists");
             if (!userService.IsNameUnique(username)) errors.Add("Username already exists");
-            if (!emailService.IsEmailValid(email)) errors.Add("Email is not valid");
             if (errors.Any()) return BadRequest(errors);
             //Create new user
             var passwordHash = hashingService.HashPassword(password);
@@ -104,14 +96,8 @@ namespace myAuthExampleApi.Controllers
                 Active = true,
             };
             userService.Create(user);
-            var simpleToken = simpleTokenService.GenerateSimpleToken();
-            simpleTokenService.StoreToken(user.Id, simpleToken);
-            //Don't send email if no email host settings are defined
-            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return NoContent();
-            var body = $@"Welcome,
-
-Your account has been created. Click on this link to confirm your email: http://localhost:4200/confirmemail/{user.Id}/{simpleToken}";
-            emailService.SendEmail(new MailAddress($"no-reply@mydomain.net"), new string[] { email }, "New account", body);
+            //Send email to confirm email
+            // ...
             return NoContent();
         }
 
@@ -119,10 +105,9 @@ Your account has been created. Click on this link to confirm your email: http://
         [AllowAnonymous]
         public ActionResult ResetPassword(int userId, string token, string password, string confirmPassword)
         {
-            //Input validation
             if (password == null) throw new ArgumentNullException(nameof(password));
-            //Logic
-            simpleTokenService.ValidateToken(userId, token);
+            //Validate token, if valid continue
+            //...
             var user = userService.GetById(userId);
             if (user == null) return BadRequest();
             if (user.Active == false) return BadRequest("Account is not active.");
@@ -135,17 +120,11 @@ Your account has been created. Click on this link to confirm your email: http://
         [AllowAnonymous]
         public ActionResult ForgotUsername(string email)
         {
-            //Don't send email if no email host settings are defined
-            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email host setting is not set.");
-            //Logic
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
             if (user.Active == false) return BadRequest("Unable to retrieve username. Account is not active.");
-            if (!emailService.IsEmailValid(email)) return BadRequest("Email is not a valid email address");
-            var token = simpleTokenService.GenerateSimpleToken();
-            simpleTokenService.StoreToken(user.Id, token);
-            var body = $@"Your username is: {user.UserName}";
-            emailService.SendEmail(new MailAddress($"no-reply@mydomain.net"), new string[] { email }, "Username", body);
+            //Send Email with the username
+            //...
             return NoContent();
         }
 
@@ -153,17 +132,11 @@ Your account has been created. Click on this link to confirm your email: http://
         [AllowAnonymous]
         public ActionResult ForgotPassword(string email)
         {
-            //Don't send email if no email host settings are defined
-            if (string.IsNullOrWhiteSpace(emailService.Settings.Host)) return BadRequest("Unable to send email. Email host setting is not set.");
-            //Logic
             var user = userService.GetByEmail(email);
             if (user == null) return NotFound();
             if (user.Active == false) return BadRequest("Cannot reset password. Account is not active.");
-            if (!emailService.IsEmailValid(email)) return BadRequest("Email is not a valid email address");
-            var token = simpleTokenService.GenerateSimpleToken();
-            simpleTokenService.StoreToken(user.Id, token);
-            var body = $@"A password reset was requested for this account. Click on the following link to reset your password: http://localhost:4200/resetpassword/{user.Id}/{token}";
-            emailService.SendEmail(new MailAddress($"no-reply@mydomain.net"), new string[] { email }, "Password reset", body);
+            //Send an email with a reset link to the user
+            //...
             return NoContent();
         }
 
@@ -172,7 +145,7 @@ Your account has been created. Click on this link to confirm your email: http://
         public ActionResult ConfirmEmail(int userId, string token)
         {
             if (userService.IsEmailConfirmed(userId)) return BadRequest("Your email has already been confirmed");
-            simpleTokenService.ValidateToken(userId, token);
+            //Validate token, if valid set email confirmed to true in database
             userService.SetEmailConfirmed(userId);
             return NoContent();
         }

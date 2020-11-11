@@ -30,16 +30,11 @@ namespace myAuthExampleApi
         {
             services
                 .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
-                .AddScoped<ISimpleTokenRepository, SimpleTokenRepository>()
                 .AddScoped<IUserRepository, UserRepository>();
             //Add services with their own ServiceCollection extensions
             services
                 .AddUserService()
-                .AddPasswordHashingService()
-                .AddEmailService(options =>
-                {
-                    options.Host = Configuration["EmailSettings:Host"];
-                });
+                .AddPasswordHashingService();
             //Configure database connection
             services.AddDbContext<MyAuthExampleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Database_prod")));
             //Configure CORS

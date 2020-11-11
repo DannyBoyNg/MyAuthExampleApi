@@ -26,12 +26,6 @@ namespace myAuthExampleApi.Controllers
             var e = context.Error;
             Request.Path = context.Path;
             if (e is NotAuthorizedException || e is NotAuthenticatedException) return Unauthorized();
-            if (e is CooldownException)
-            {
-                TimeSpan? cooldownLeft = (e as CooldownException)?.CooldownLeft;
-                if (cooldownLeft != null) Response.Headers.Add("cooldownLeft", cooldownLeft.Value.TotalSeconds.ToString("N0", CultureInfo.InvariantCulture));
-            }
-
             var msg = GetBaseExceptionMessage(e);
             return BadRequest(msg);
         }
