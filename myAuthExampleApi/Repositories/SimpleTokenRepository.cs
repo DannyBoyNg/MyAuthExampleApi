@@ -1,4 +1,4 @@
-﻿using myAuthExampleApi.Models.DbModels;
+﻿using myAuthExampleApi.Models;
 using Ng.Services;
 using System.Collections.Generic;
 using System.Linq;

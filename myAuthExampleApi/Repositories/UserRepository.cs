@@ -1,4 +1,4 @@
-﻿using myAuthExampleApi.Models.DbModels;
+﻿using myAuthExampleApi.Models;
 using Services.UserServ;
 using System.Linq;
 
@@ -19,17 +19,17 @@ namespace myAuthExampleApi.Repositories
             db.Users.Remove(user as User);
         }
 
-        public IUser GetById(int userId)
+        public IUser? GetById(int userId)
         {
             return db.Users.Where(x => x.Id == userId).SingleOrDefault();
         }
 
-        public IUser GetByEmail(string email)
+        public IUser? GetByEmail(string email)
         {
             return db.Users.Where(x => x.Email == email).SingleOrDefault();
         }
 
-        public IUser GetByName(string username)
+        public IUser? GetByName(string username)
         {
             return db.Users.Where(x => x.UserName == username).SingleOrDefault();
         }

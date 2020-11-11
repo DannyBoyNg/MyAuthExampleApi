@@ -1,4 +1,6 @@
-﻿namespace Services.UserServ
+﻿using System;
+
+namespace Services.UserServ
 {
     public class UserService : IUserService
     {
@@ -11,21 +13,21 @@
 
         public void Create(IUser user)
         {
-            UserRepo.Insert(user as IUser);
+            UserRepo.Insert(user);
             UserRepo.Save();
         }
 
-        public IUser GetByEmail(string email)
+        public IUser? GetByEmail(string email)
         {
             return UserRepo.GetByEmail(email);
         }
 
-        public IUser GetById(int userId)
+        public IUser? GetById(int userId)
         {
             return UserRepo.GetById(userId);
         }
 
-        public IUser GetByName(string username)
+        public IUser? GetByName(string username)
         {
             return UserRepo.GetByName(username);
         }
@@ -43,6 +45,7 @@
         public void UpdatePassword(int userId, string PasswordHash)
         {
             var user = GetById(userId);
+            if (user == null) throw new Exception("Entity not found");
             user.PasswordHash = PasswordHash;
             UserRepo.Save();
         }
@@ -50,12 +53,14 @@
         public bool IsEmailConfirmed(int userId)
         {
             var user = GetById(userId);
+            if (user == null) return false;
             return user.EmailConfirmed;
         }
 
         public void SetEmailConfirmed(int userId)
         {
             var user = GetById(userId);
+            if (user == null) throw new Exception("Entity not found");
             user.EmailConfirmed = true;
             UserRepo.Save();
         }

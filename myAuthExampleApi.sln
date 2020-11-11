@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29728.190
+VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "myAuthExampleApi", "myAuthExampleApi\myAuthExampleApi.csproj", "{5A0C7A9B-0378-49B4-A5C2-2771512FEEE7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "myAuthExampleApi", "myAuthExampleApi\myAuthExampleApi.csproj", "{D6A581CF-49F6-4A3A-B4A9-172C497F1BBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5A0C7A9B-0378-49B4-A5C2-2771512FEEE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A0C7A9B-0378-49B4-A5C2-2771512FEEE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A0C7A9B-0378-49B4-A5C2-2771512FEEE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A0C7A9B-0378-49B4-A5C2-2771512FEEE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6A581CF-49F6-4A3A-B4A9-172C497F1BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6A581CF-49F6-4A3A-B4A9-172C497F1BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6A581CF-49F6-4A3A-B4A9-172C497F1BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6A581CF-49F6-4A3A-B4A9-172C497F1BBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {BCE58398-E933-43BD-9367-E3AF206C23CB}
+		SolutionGuid = {BF69F935-99B5-4961-A104-4D350EEDAE97}
 	EndGlobalSection
 EndGlobal

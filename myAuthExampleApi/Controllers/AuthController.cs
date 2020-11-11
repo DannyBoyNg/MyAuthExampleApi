@@ -8,11 +8,12 @@ using System.Net.Mail;
 using System.Security.Claims;
 using Services.UserServ;
 using System.Threading;
-using myAuthExampleApi.Models.DbModels;
+using myAuthExampleApi.Models;
 using System.Globalization;
 
 namespace myAuthExampleApi.Controllers
 {
+    [ApiController]
     [Authorize]
     [Route("api/user/[action]")]
     public class AuthController : ControllerBase
@@ -37,15 +38,9 @@ namespace myAuthExampleApi.Controllers
             this.emailService = emailService;
         }
 
-        [Route("/Startup")]
-        [AllowAnonymous]
-        public ActionResult Startup()
-        {
-            return Ok("Dev Server Started");
-        }
-
         [Route("/Token")]
         [AllowAnonymous]
+        [HttpPost]
         public ActionResult Token(string username, string password)
         {
             //sleep timer to demonstrate the loading bar
@@ -67,6 +62,7 @@ namespace myAuthExampleApi.Controllers
         }
 
         [Route("/Refresh")]
+        [HttpPost]
         [AllowAnonymous]
         public ActionResult Refresh(string accessToken, string refreshToken)
         {
@@ -78,6 +74,7 @@ namespace myAuthExampleApi.Controllers
             jwtTokenService.ValidateRefreshToken(userId, refreshToken);
             //get user from data store
             var user = userService.GetById(userId);
+            if (user == null) return NotFound("User not found");
             //create new tokens
             var claims = new List<Claim> { new Claim("uid", uid) };
             var newAccessToken = jwtTokenService.GenerateAccessToken(user.UserName, null, claims);

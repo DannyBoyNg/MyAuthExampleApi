@@ -2,9 +2,9 @@
 {
     public interface IUserService
     {
-        IUser GetById(int userId);
-        IUser GetByName(string username);
-        IUser GetByEmail(string email);
+        IUser? GetById(int userId);
+        IUser? GetByName(string username);
+        IUser? GetByEmail(string email);
         bool IsNameUnique(string username);
         bool IsEmailUnique(string email);
         bool IsEmailConfirmed(int userId);

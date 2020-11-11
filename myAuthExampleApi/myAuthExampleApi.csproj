@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -18,13 +18,8 @@
     <PackageReference Include="Ng.JwtTokenService" Version="2.0.0" />
     <PackageReference Include="Ng.LegacyEmailService" Version="1.0.1" />
     <PackageReference Include="Ng.PasswordHashingService" Version="1.0.1" />
-    <PackageReference Include="Ng.SimpleTokenService" Version="1.0.0" />
-    <PackageReference Include="Ng.UserAgentService" Version="1.0.2" />
+    <PackageReference Include="Ng.SimpleTokenService" Version="1.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\ApiModels\" />
-  </ItemGroup>
-
 
 </Project>
